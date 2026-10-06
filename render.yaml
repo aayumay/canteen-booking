@@ -18,6 +18,6 @@ services:
       - key: ENVIRONMENT
         value: "production"
 
-  - type: psql
-    name: canteen-db
+databases:
+  - name: canteen-db
     plan: free
