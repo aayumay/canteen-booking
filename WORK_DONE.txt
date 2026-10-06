@@ -1,0 +1,171 @@
+================================================================
+ CANTEEN BOOKING SYSTEM - FRONTEND WORK LOG
+ Mobile-first React (Vite) app for the existing FastAPI backend
+================================================================
+
+STATUS: Complete - production build verified (npm run build passes)
+
+----------------------------------------------------------------
+ 1. PROJECT SETUP  (frontend/)
+----------------------------------------------------------------
+- package.json          React 18, Vite 5, react-router-dom 6,
+                        @tanstack/react-query 5, axios. Scripts:
+                        dev / build / preview.
+- vite.config.js        React plugin, dev server on port 5173
+                        (already whitelisted in backend CORS).
+- index.html            Entry page, mobile viewport with
+                        viewport-fit=cover, IBM Plex Mono font
+                        (used for all prices/quantities/tokens).
+- .env.example          VITE_API_BASE_URL=http://localhost:8000
+- .gitignore            node_modules, dist, .env
+- README.txt            How to run the app.
+
+----------------------------------------------------------------
+ 2. API LAYER  (frontend/src/api/)
+----------------------------------------------------------------
+- session.js            Session persistence in localStorage
+                        (access token + refresh token + user).
+- axiosClient.js        One axios instance for the whole app.
+                        * Attaches "Authorization: Bearer <JWT>"
+                          to EVERY request.
+                        * On any 401: clears the session and
+                          redirects to /login (preserving the page
+                          the user was on).
+                        * Converts FastAPI error bodies
+                          (detail string or validation list) into
+                          readable Error messages.
+- authApi.js            request-otp, verify-otp, auth/me.
+- studentApi.js         open vendors, vendor menu, place order,
+                        my orders, single order.
+- vendorApi.js          shop toggle, menu CRUD, incoming orders,
+                        order status transitions.
+
+----------------------------------------------------------------
+ 3. AUTH  (contexts + hooks)
+----------------------------------------------------------------
+- src/contexts/AuthContext.jsx
+                        Session state in React, synced to
+                        localStorage. Revalidates the profile via
+                        /auth/me on load. login() persists tokens,
+                        fetches the user, returns the role so the
+                        Login page can route by role.
+- src/hooks/useAuth.js  Context consumer hook.
+
+----------------------------------------------------------------
+ 4. CORE HOOKS  (frontend/src/hooks/)
+----------------------------------------------------------------
+- useCart.jsx           Vendor-scoped cart with localStorage
+                        persistence. Adding from a DIFFERENT vendor
+                        asks for confirmation and then CLEARS the
+                        cart (one vendor per cart rule). Exposes
+                        lines, count, subtotal (DISPLAY ONLY - the
+                        subtotal is never sent to the server).
+- useOrderStatus.js     Polls ONE order every 4 seconds until it
+                        reaches a terminal status (picked_up /
+                        rejected / cancelled), then stops. Pauses
+                        while the tab is hidden. Exposes the stable
+                        interface { order, isLoading, error,
+                        refresh } so the polling can later be
+                        swapped for a WebSocket without touching
+                        any component.
+
+----------------------------------------------------------------
+ 5. ROUTING
+----------------------------------------------------------------
+- src/routes/ProtectedRoute.jsx
+                        Role-based guard: not logged in -> /login,
+                        wrong role -> redirected to their own home,
+                        plus a loading state while the session is
+                        restored.
+- src/App.jsx           Routes: /login, role-aware /, student tree
+                        (/student, /student/vendors/:id,
+                        /student/orders) and /vendor.
+- src/main.jsx          QueryClient + AuthProvider setup.
+
+----------------------------------------------------------------
+ 6. PAGES  (frontend/src/pages/)
+----------------------------------------------------------------
+- Login.jsx             Two-step flow: role + phone number ->
+                        OTP. First-time students get a name field
+                        (required only when the backend says so).
+                        Resend code with 30s cooldown. After
+                        verify, stores session and routes
+                        student -> /student, vendor -> /vendor.
+- StudentMenu.jsx       One page, two views: open vendors list,
+                        and a chosen vendor's menu grouped by
+                        category with add-to-cart steppers and a
+                        warning when the cart belongs to another
+                        canteen.
+- StudentOrders.jsx     Order history as paper tickets; active
+                        orders show a LIVE badge and poll until
+                        terminal. New order is highlighted when
+                        arriving from checkout.
+- VendorDashboard.jsx   Shop open/closed switch in the header,
+                        Orders/Menu tabs, live order board
+                        (auto-refresh every 5s) and full menu
+                        management.
+
+----------------------------------------------------------------
+ 7. COMPONENTS
+----------------------------------------------------------------
+common/   Spinner, ErrorState (with retry), EmptyState,
+          StatusBadge (amber/green/red palette), Modal
+          (bottom-sheet on phones, dialog on desktop).
+student/  StudentLayout (app bar + bottom tab bar), VendorCard,
+          MenuItemCard, CartBar (floating bar above tab bar),
+          CheckoutSheet (review, place order, then show the
+          SERVER-issued pickup token and total), OrderTicket
+          (perforated paper ticket), PickupToken (stamped,
+          rotated, mono digits).
+vendor/   ShopToggle, OrderQueueColumn, VendorOrderCard (fetches
+          line items, shows accept/reject/advance buttons),
+          RejectModal (reason is REQUIRED to submit),
+          MenuManager (add/edit/delete, availability switch,
+          two-step delete confirm), MenuItemForm.
+
+----------------------------------------------------------------
+ 8. DESIGN  (src/index.css)
+----------------------------------------------------------------
+- Mobile-first: phone-width app shell (max 560px) centered on
+  desktop, bottom tab bar for students, floating cart bar,
+  bottom-sheet modals, 44px+ touch targets, 16px inputs (no iOS
+  zoom), safe-area insets for notched phones.
+- Theme: dark charcoal base, marigold accent, unbleached-paper
+  "ticket" cards for orders and menu items with perforated tear
+  edges and punched notches.
+- Monospace numerals (IBM Plex Mono) for prices, quantities,
+  order numbers and the pickup token; plain sans-serif for
+  everything else.
+- Pickup token looks like a stamped ticket number (dashed
+  border, slight rotation) because it is what the student shows
+  at the counter.
+- Status colors: placed/accepted/preparing = amber,
+  ready/picked_up = green, rejected/cancelled = red.
+
+----------------------------------------------------------------
+ 9. RULES HONORED
+----------------------------------------------------------------
+- NO mock data anywhere; every screen fetches the real FastAPI
+  endpoints.
+- Order requests send ONLY vendor_id + {menu_item_id, quantity};
+  client-side totals/prices are display-only and never sent.
+- Totals, pickup tokens and statuses shown after checkout come
+  from server responses.
+- Every fetch shows loading and error states (with retry);
+  every mutation shows pending state and surfaces errors
+  inline - no silent failures.
+- Responsive: designed for phones first, degrades gracefully
+  on desktop.
+
+----------------------------------------------------------------
+ 10. HOW TO RUN
+----------------------------------------------------------------
+  cd frontend
+  npm install
+  npm run dev            -> http://localhost:5173
+
+  Backend must be running (uvicorn app.main:app) on
+  http://localhost:8000, or set VITE_API_BASE_URL in
+  frontend/.env.
+
+  Production build: npm run build (verified passing).

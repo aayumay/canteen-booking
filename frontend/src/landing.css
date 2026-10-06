@@ -1,0 +1,1841 @@
+/* ============================================================
+   LANDING PAGE  ·  namespace: lp-
+   Editorial canteen story. Same palette, same type stack as the
+   app — only the scale is fluid so it reads from 360px to 1600px.
+   Kept in its own file so the app design system (index.css)
+   stays focused and this block is easy to tree-shake per route.
+   ============================================================ */
+
+.lp-root {
+  position: relative;
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: clip;
+  isolation: isolate;
+}
+
+.lp-main {
+  position: relative;
+  z-index: 1;
+}
+
+.lp-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 300;
+  padding: 10px 18px;
+  background: var(--color-cream);
+  color: var(--color-forest);
+  border-radius: 0 0 var(--radius-sm) 0;
+  font-weight: 700;
+}
+.lp-skip:focus {
+  left: 0;
+}
+
+.lp-section {
+  position: relative;
+  padding: 56px 0;
+}
+
+.lp-section-inner {
+  position: relative;
+  width: 100%;
+  max-width: var(--lp-max);
+  margin: 0 auto;
+  padding: 0 var(--lp-gutter);
+}
+
+/* ---------- Reveal engine (class-driven, compositor friendly) ---------- */
+.lp-reveal {
+  opacity: 0;
+  transform: var(--lp-reveal-from, translate3d(0, 26px, 0)) scale(var(--lp-reveal-scale, 1));
+  transition:
+    opacity 0.7s var(--ease-out-soft) var(--lp-reveal-delay, 0ms),
+    transform 0.8s var(--ease-out-soft) var(--lp-reveal-delay, 0ms);
+}
+.lp-reveal.is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.lp-reveal-group > * {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition:
+    opacity 0.62s var(--ease-out-soft),
+    transform 0.72s var(--ease-out-soft);
+  transition-delay: calc(
+    var(--lp-group-delay, 0ms) + var(--lp-stagger, 70ms) * var(--lp-index, 0)
+  );
+}
+.lp-reveal-group.is-in > * {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-reveal,
+  .lp-reveal-group > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- Typography scale (fluid, same families) ---------- */
+.lp-kicker {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+}
+
+/* Section head: one alignment system shared by every section.
+
+   All five section titles sit on the same left edge and wrap against the same
+   measure, so the eye can follow a single vertical spine down the page. Before
+   this the measure was overridden per section (18ch base, 20ch in Features,
+   24ch in DoodleShowcase) and DoodleShowcase centred its note while every
+   other section left-aligned it, so no two headers agreed on where they
+   started. */
+.lp-section-title {
+  margin: 11px 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 4.6vw, 48px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  color: var(--color-forest);
+  max-width: 20ch;
+}
+
+.lp-section-head {
+  position: relative;
+  margin-bottom: 38px;
+}
+
+.lp-section-note {
+  margin: 0;
+  max-width: 42ch;
+  font-size: 15.5px;
+  line-height: 1.62;
+  color: var(--color-text-muted);
+}
+/* Kept as a class so existing markup still resolves, but it no longer centres
+   anything: every section note shares the title's left edge. */
+.lp-section-note-center {
+  margin: 14px 0 0;
+  text-align: left;
+}
+
+/* The decoration under a title shares the title's left edge. It used to carry
+   a hand-tuned 4px offset that nothing else in the head accounted for. */
+.lp-section-squiggle {
+  display: block;
+  width: 172px;
+  height: auto;
+  margin: 14px 0 0;
+  color: var(--color-orange);
+  opacity: 0.75;
+}
+
+.lp-section-burst {
+  position: absolute;
+  top: -6px;
+  right: 2%;
+  color: var(--color-orange);
+  opacity: 0.5;
+}
+
+@media (min-width: 768px) {
+  .lp-section { padding: 72px 0; }
+  .lp-section-head { margin-bottom: 48px; }
+}
+
+/* ---------- Buttons ---------- */
+.lp-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 30px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid transparent;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-align: center;
+  transition:
+    transform 0.24s var(--ease-out-soft),
+    background-color var(--dur-fast) var(--ease-out-soft),
+    box-shadow var(--dur-base) var(--ease-out-soft),
+    color var(--dur-fast) var(--ease-out-soft),
+    border-color var(--dur-fast) var(--ease-out-soft);
+}
+
+.lp-btn:hover { transform: translate3d(0, -2px, 0); }
+.lp-btn:active { transform: translate3d(0, 0, 0) scale(0.975); }
+
+.lp-btn-sm { min-height: 42px; padding: 0 20px; font-size: 13.5px; }
+.lp-btn-lg { min-height: 60px; padding: 0 34px; font-size: 16px; }
+.lp-btn-block { width: 100%; }
+
+.lp-btn-primary {
+  background: var(--color-forest);
+  color: var(--color-cream);
+  box-shadow: 0 6px 18px rgba(30, 59, 27, 0.24);
+}
+.lp-btn-primary:hover {
+  background: var(--color-forest-deep);
+  box-shadow: 0 14px 34px rgba(30, 59, 27, 0.3);
+}
+
+.lp-btn-ghost {
+  background: transparent;
+  color: var(--color-forest);
+  border-color: var(--color-hairline-2);
+}
+.lp-btn-ghost:hover {
+  background: rgba(245, 240, 232, 0.6);
+  border-color: var(--color-forest);
+}
+
+.lp-btn-quiet {
+  background: transparent;
+  color: var(--color-forest);
+  padding-left: 8px;
+  padding-right: 18px;
+}
+.lp-btn-quiet::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 18px;
+  bottom: 12px;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-base) var(--ease-out-soft);
+}
+.lp-btn-quiet:hover::after { transform: scaleX(1); }
+
+.lp-btn-cream {
+  background: var(--color-cream);
+  color: var(--color-forest);
+  box-shadow: 0 10px 30px rgba(15, 30, 13, 0.28);
+}
+.lp-btn-cream:hover { background: #fff; }
+
+.lp-btn-outline-cream {
+  background: transparent;
+  color: var(--color-cream);
+  border-color: rgba(245, 240, 232, 0.45);
+}
+.lp-btn-outline-cream:hover {
+  border-color: var(--color-cream);
+  background: rgba(245, 240, 232, 0.1);
+}
+
+.lp-btn-arrow {
+  flex-shrink: 0;
+  transition: transform var(--dur-base) var(--ease-out-soft);
+}
+.lp-btn:hover .lp-btn-arrow { transform: translateX(4px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-btn:hover, .lp-btn:active { transform: none; }
+  .lp-btn:hover .lp-btn-arrow { transform: none; }
+}
+
+/* ---------- Wordmark ---------- */
+.lp-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--color-forest);
+}
+.lp-wordmark-glyph { display: block; width: 26px; height: 26px; }
+.lp-wordmark-glyph svg { width: 100%; height: 100%; display: block; }
+.lp-wordmark-text {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.lp-wordmark-accent { color: var(--color-orange); }
+.lp-wordmark-cream { color: var(--color-cream); }
+.lp-wordmark-cream .lp-wordmark-accent { color: var(--color-gold); }
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+.lp-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  padding-top: env(safe-area-inset-top, 0px);
+  transition:
+    background-color var(--dur-base) var(--ease-out-soft),
+    box-shadow var(--dur-base) var(--ease-out-soft);
+}
+.lp-nav.is-scrolled {
+  background: var(--color-glass);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: 0 1px 0 var(--color-hairline), 0 10px 30px rgba(30, 59, 27, 0.08);
+}
+
+.lp-nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  max-width: var(--lp-max);
+  margin: 0 auto;
+  padding: 14px var(--lp-gutter);
+}
+
+.lp-nav-brand {
+  display: inline-flex;
+  align-items: center;
+  /* The mark must never be the thing that shrinks on a narrow phone. */
+  flex: 0 0 auto;
+}
+
+.lp-nav-links { display: none; gap: 30px; }
+
+.lp-nav-link {
+  position: relative;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-forest);
+  opacity: 0.78;
+  padding: 4px 0;
+  transition: opacity var(--dur-fast) var(--ease-out-soft);
+}
+.lp-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--color-forest);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-base) var(--ease-out-soft);
+}
+.lp-nav-link:hover { opacity: 1; }
+.lp-nav-link:hover::after { transform: scaleX(1); transform-origin: left; }
+
+.lp-nav-actions { display: flex; align-items: center; gap: 10px; }
+.lp-nav-actions .lp-btn-ghost { display: none; }
+
+.lp-nav-progress { height: 2px; background: transparent; }
+.lp-nav-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--color-forest);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+.lp-burger {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(245, 240, 232, 0.55);
+  border: 1px solid var(--color-hairline-2);
+}
+.lp-burger > span {
+  display: block;
+  width: 17px;
+  height: 2px;
+  margin: 0 auto;
+  background: var(--color-forest);
+  border-radius: 2px;
+  transition:
+    transform var(--dur-base) var(--ease-out-soft),
+    opacity var(--dur-fast) linear;
+}
+.lp-burger > span:first-child.is-x { transform: translateY(3.5px) rotate(45deg); }
+.lp-burger > span:last-child.is-x { transform: translateY(-3.5px) rotate(-45deg); }
+
+@media (min-width: 900px) {
+  .lp-nav-links { display: flex; }
+  .lp-nav-actions .lp-btn-ghost { display: inline-flex; }
+  .lp-burger { display: none; }
+}
+
+/* ---------- Mobile drawer ---------- */
+.lp-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+  padding: 96px var(--lp-gutter) 40px;
+  background: var(--grad-forest);
+  color: var(--color-cream);
+  animation: lp-drawer-in 0.34s var(--ease-out-soft) both;
+}
+.lp-drawer[hidden] { display: none; }
+
+@keyframes lp-drawer-in {
+  from { opacity: 0; clip-path: circle(0% at calc(100% - 44px) 46px); }
+  to   { opacity: 1; clip-path: circle(150% at calc(100% - 44px) 46px); }
+}
+
+.lp-drawer-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.lp-drawer-doodle { position: absolute; color: var(--color-cream); opacity: 0.16; }
+.lp-drawer-doodle-1 { top: 8%; right: 6%; width: 76px; }
+.lp-drawer-doodle-2 { bottom: 12%; left: 8%; width: 60px; }
+.lp-drawer-doodle-3 { top: 30%; left: 12%; width: 26px; }
+
+.lp-drawer-links {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lp-drawer-link {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 12px 0;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 8.2vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border-bottom: none;
+  opacity: 0;
+  animation: lp-rise 0.5s var(--ease-out-soft) var(--lp-stagger, 0ms) both;
+}
+.lp-drawer-num { font-size: 12px; opacity: 0.5; letter-spacing: 0.1em; }
+
+@keyframes lp-rise {
+  from { opacity: 0; transform: translate3d(0, 16px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+.lp-drawer-actions {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.lp-hero {
+  position: relative;
+  padding: 132px 0 76px;
+  overflow: hidden;
+}
+
+.lp-hero-bg { position: absolute; inset: 0; pointer-events: none; }
+.lp-hero-glow {
+  position: absolute;
+  top: -22%;
+  right: -10%;
+  width: min(760px, 92vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(208, 222, 197, 0.95) 0%,
+    rgba(208, 222, 197, 0) 68%
+  );
+}
+.lp-hero-grid {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 260px;
+  color: var(--color-forest);
+  opacity: 0.14;
+}
+.lp-hero-hatch {
+  position: absolute;
+  bottom: -40px;
+  left: -50px;
+  width: 260px;
+  color: var(--color-forest);
+  opacity: 0.09;
+}
+
+.lp-hero-inner {
+  position: relative;
+  display: grid;
+  gap: 56px;
+  width: 100%;
+  max-width: var(--lp-max);
+  margin: 0 auto;
+  padding: 0 var(--lp-gutter);
+}
+
+.lp-eyebrow-wrap { margin-bottom: 22px; }
+
+.lp-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 16px 7px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-cream);
+  border: 1px solid var(--color-hairline-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-forest);
+  box-shadow: var(--shadow-xs);
+}
+.lp-eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-leaf);
+  box-shadow: 0 0 0 0 rgba(107, 155, 97, 0.6);
+  animation: lp-pulse-dot 2.4s ease-out infinite;
+}
+@keyframes lp-pulse-dot {
+  0%   { box-shadow: 0 0 0 0 rgba(107, 155, 97, 0.55); }
+  70%  { box-shadow: 0 0 0 9px rgba(107, 155, 97, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(107, 155, 97, 0); }
+}
+
+/* ---------- Hero heading ----------
+
+   Reference-matched three-face display stack:
+     Hot food.              -> Caveat (handwritten script)
+     Zero queue.            -> DM Serif Display italic, "Zero" in mustard
+     Ready when class ends. -> DM Serif Display roman
+
+   Both families come from the single Google Fonts <link> in index.html — no
+   @import here, because a second stylesheet request for the same faces would
+   duplicate the download and delay first paint.
+
+   The reference palette is a little warmer and more olive than the global
+   tokens, so the two values are declared here rather than added to :root.
+   Editing a global token would restyle the whole site; this keeps the change
+   scoped to the headline. */
+.hero-heading {
+  --hero-olive: #536847;
+  --hero-mustard: #a47b12;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Caps the block so the nowrap "Zero queue." can never widen the grid
+     column and push into the food collage. */
+  max-width: 760px;
+  margin: 0;
+  color: var(--hero-olive);
+  line-height: 0.94;
+  letter-spacing: -2.4px;
+
+  animation: hero-heading-in 0.9s var(--ease-out-editorial) both;
+}
+@keyframes hero-heading-in {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.hero-line {
+  position: relative;
+  font-size: clamp(3rem, 5.3vw, 5.8rem);
+  font-weight: 400;
+}
+
+/* Handwritten script line.
+
+   font-style is deliberately NOT italic. Caveat publishes only a normal cut —
+   it is a script face that already leans. Asking for italic makes the engine
+   synthesise a skewed oblique on top of that existing slant, which visibly
+   distorts the glyphs. The native slant is the intended look. */
+.hero-script {
+  font-family: "Caveat", cursive;
+  font-size: clamp(3.8rem, 5.9vw, 5.9rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  transform: rotate(-4deg);
+  /* Rotating about the centre would swing the right edge toward the collage,
+     so it pivots from the left edge instead. */
+  transform-origin: left center;
+  margin-bottom: 0.05em;
+  color: var(--hero-olive);
+}
+
+/* Squiggle trailing the script line. Sits on the cap line so it reads as an
+   accent mark rather than a fourth word. */
+.accent-rays {
+  display: inline-block;
+  margin-left: 0.18em;
+  font-family: "Caveat", cursive;
+  font-size: 0.42em;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--hero-mustard);
+  vertical-align: 0.62em;
+}
+
+/* "Zero queue." — italic editorial serif.
+   position + z-index establish the stacking context the oval's z-index: -1
+   resolves against, which is what puts the oval behind the glyphs while
+   keeping it in front of the page. */
+.hero-zero {
+  position: relative;
+  z-index: 1;
+  font-family: "DM Serif Display", serif;
+  font-style: italic;
+  font-weight: 400;
+  white-space: nowrap;
+  margin-left: 0.05em;
+}
+
+.zero-highlight { color: var(--hero-mustard); }
+.queue-highlight { color: var(--hero-olive); }
+
+/* Hand-drawn oval around "Zero queue.".
+   All four insets are negative, so the ellipse is larger than the text box on
+   every side and clears the glyphs rather than cutting through them. */
+.highlight-oval {
+  position: absolute;
+  inset: -0.08em -0.13em -0.12em -0.15em;
+  border: 2px solid var(--hero-mustard);
+  border-radius: 50%;
+  transform: rotate(-2deg);
+  pointer-events: none;
+  z-index: -1;
+  /* Replaces the draw-in the previous SVG ring had. */
+  animation: hero-oval-in 1.4s var(--ease-out-soft) 0.45s both;
+}
+@keyframes hero-oval-in {
+  from { opacity: 0; transform: rotate(-2deg) scale(1.12); }
+  to   { opacity: 1; transform: rotate(-2deg) scale(1); }
+}
+
+/* Editorial closing line. */
+.hero-editorial {
+  font-family: "DM Serif Display", serif;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -2.5px;
+  color: var(--hero-olive);
+  margin-top: 0.08em;
+}
+
+@media (max-width: 768px) {
+  .hero-heading {
+    max-width: 100%;
+    letter-spacing: -1px;
+  }
+  .hero-line {
+    font-size: clamp(2.4rem, 7.7vw, 3.9rem);
+  }
+  .hero-script {
+    font-size: clamp(3.1rem, 9vw, 4.4rem);
+  }
+  .hero-editorial {
+    letter-spacing: -1.2px;
+  }
+  .highlight-oval {
+    border-width: 1.5px;
+  }
+}
+
+.lp-hero-lede {
+  margin: 26px 0 0;
+  max-width: 48ch;
+  font-size: 17px;
+  line-height: 1.62;
+  color: var(--color-text-dim);
+}
+
+.lp-hero-cta-wrap { position: relative; margin-top: 34px; }
+.lp-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.lp-hero-arrow {
+  position: absolute;
+  top: 50%;
+  right: -34px;
+  width: 70px;
+  color: var(--color-forest);
+  opacity: 0.42;
+  transform: translateY(-50%) rotate(6deg);
+  pointer-events: none;
+  animation: lp-nudge 3.4s var(--ease-out-soft) infinite;
+}
+@keyframes lp-nudge {
+  0%, 100% { transform: translateY(-50%) rotate(6deg) translateX(0); }
+  50%      { transform: translateY(-50%) rotate(6deg) translateX(6px); }
+}
+
+/* The hero social-proof banner (stock avatar row + a hardcoded "4.8 average
+   from campus foodies") was removed as fabricated content. Its rules went with
+   it: .lp-hero-proof-wrap, .lp-hero-proof, .lp-hero-avatars, .lp-hero-avatar,
+   .lp-hero-proof-text and .lp-stars had no other consumers. */
+
+.lp-hero-copy { min-width: 0; }
+.lp-hero-art-wrap { min-width: 0; }
+
+/* The collage wrapper carries the scroll-linked transform. Only promote it to
+   its own compositor layer when motion is actually welcome, so reduced-motion
+   visitors are not left with a permanent GPU layer. */
+@media (prefers-reduced-motion: no-preference) {
+  .lp-hero-art { will-change: transform; }
+}
+
+/* Desktop hero layout.
+
+   The hero is an ordinary block again: natural height, no viewport lock, no
+   flex sizing. Only the padding is tuned — the top value clears the fixed
+   navbar (out of flow) and the bottom leaves room for .lp-scroll-cue, which is
+   positioned absolutely against this section. */
+@media (min-width: 900px) {
+  .lp-hero {
+    padding: 120px 0 88px;
+  }
+/* ---------- Ambient drift ----------
+
+   Three slow orbs behind the hero. Soft-edged radial gradients rather than
+   blurred divs: a blur() filter would re-rasterise a 400px layer every frame,
+   while a gradient that is already transparent at its edge costs nothing to
+   move. Animation is transform-only so it stays on the compositor. */
+.lp-drift {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+.lp-drift-1 {
+  width: 460px;
+  height: 460px;
+  top: 4%;
+  left: -8%;
+  background: radial-gradient(circle, rgba(107, 155, 97, 0.34) 0%, rgba(107, 155, 97, 0) 68%);
+  animation: lp-drift-1 30s ease-in-out infinite alternate;
+}
+.lp-drift-2 {
+  width: 380px;
+  height: 380px;
+  top: 42%;
+  left: 34%;
+  background: radial-gradient(circle, rgba(201, 162, 39, 0.2) 0%, rgba(201, 162, 39, 0) 66%);
+  animation: lp-drift-2 38s ease-in-out infinite alternate;
+}
+.lp-drift-3 {
+  width: 520px;
+  height: 520px;
+  bottom: -18%;
+  right: -6%;
+  background: radial-gradient(circle, rgba(208, 222, 197, 0.55) 0%, rgba(208, 222, 197, 0) 70%);
+  animation: lp-drift-3 34s ease-in-out infinite alternate;
+}
+@keyframes lp-drift-1 {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(70px, 46px, 0) scale(1.12); }
+}
+@keyframes lp-drift-2 {
+  from { transform: translate3d(0, 0, 0) scale(1.06); }
+  to   { transform: translate3d(-58px, -40px, 0) scale(0.94); }
+}
+@keyframes lp-drift-3 {
+  from { transform: translate3d(0, 0, 0) scale(0.96); }
+  to   { transform: translate3d(-46px, -52px, 0) scale(1.1); }
+}
+
+.lp-hero-inner {
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    gap: 60px;
+    align-items: center;
+  }
+  .lp-eyebrow-wrap { margin-bottom: 18px; }
+  .lp-hero-lede { font-size: 18px; margin-top: 20px; }
+  .lp-hero-cta-wrap { margin-top: 26px; }
+  .lp-hero-arrow { right: -20px; top: 84%; }
+}
+
+/* ---------- Hero collage ---------- */
+.lp-collage {
+  --lp-ptr-x: 0px;
+  --lp-ptr-y: 0px;
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1.02;
+  isolation: isolate;
+}
+
+.lp-collage-halo {
+  position: absolute;
+  inset: 4% 2%;
+  border-radius: 50%;
+  background: var(--grad-sage);
+  opacity: 0.85;
+  transform: translate3d(
+    calc(var(--lp-ptr-x) * -0.4),
+    calc(var(--lp-ptr-y) * -0.4),
+    0
+  );
+  transition: transform 0.5s var(--ease-out-soft);
+}
+
+.lp-collage-dots {
+  position: absolute;
+  top: -4%;
+  right: -2%;
+  width: 150px;
+  color: var(--color-forest);
+  opacity: 0.2;
+}
+
+.lp-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lp-collage-main,
+.lp-collage-side,
+.lp-collage-wide {
+  position: absolute;
+  margin: 0;
+  overflow: hidden;
+  background: var(--color-cream);
+  box-shadow: var(--shadow-lg);
+  transform: translate3d(
+    calc(var(--lp-ptr-x) * var(--lp-depth, 1)),
+    calc(var(--lp-ptr-y) * var(--lp-depth, 1)),
+    0
+  );
+  transition: transform 0.6s var(--ease-out-soft);
+}
+
+.lp-collage-main {
+  --lp-depth: 0.5;
+  top: 6%;
+  left: 4%;
+  width: 62%;
+  aspect-ratio: 4 / 5;
+  border-radius: 22px 22px 22px 90px;
+  z-index: 3;
+}
+.lp-collage-side {
+  --lp-depth: -0.9;
+  top: 3%;
+  right: 2%;
+  width: 34%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  z-index: 2;
+}
+.lp-collage-wide {
+  --lp-depth: 1.4;
+  bottom: 6%;
+  right: 6%;
+  width: 56%;
+  aspect-ratio: 16 / 10;
+  border-radius: 18px 70px 18px 18px;
+  z-index: 4;
+}
+
+.lp-collage-tag {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 5px 11px;
+  border-radius: var(--radius-pill);
+  background: var(--color-cream);
+  color: var(--color-forest);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  box-shadow: var(--shadow-sm);
+}
+
+.lp-collage-float-a { animation: lp-float-a 9s ease-in-out infinite; }
+.lp-collage-float-b { animation: lp-float-b 11s ease-in-out infinite; }
+.lp-collage-float-c { animation: lp-float-c 10s ease-in-out infinite; }
+
+@keyframes lp-float-a {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -12px; }
+}
+@keyframes lp-float-b {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 14px; }
+}
+@keyframes lp-float-c {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -9px; }
+}
+
+.lp-badge {
+  position: absolute;
+  bottom: 1%;
+  left: 0;
+  z-index: 5;
+  width: 108px;
+  height: 108px;
+  display: grid;
+  place-items: center;
+}
+.lp-badge-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: lp-spin 22s linear infinite;
+}
+.lp-badge-text {
+  font-family: var(--font-mono);
+  font-size: 9.4px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  fill: var(--color-forest);
+  text-transform: uppercase;
+}
+.lp-badge-core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-cream);
+  color: var(--color-leaf);
+  box-shadow: var(--shadow-sm);
+}
+@keyframes lp-spin {
+  to { transform: rotate(360deg); }
+}
+
+.lp-collage-spark {
+  position: absolute;
+  color: var(--color-orange);
+  opacity: 0.7;
+  z-index: 6;
+}
+.lp-collage-spark-1 { top: 34%; right: 0; animation: lp-twinkle 4.5s ease-in-out infinite; }
+.lp-collage-spark-2 {
+  bottom: 30%;
+  left: -1%;
+  animation: lp-twinkle 4.5s ease-in-out 1.2s infinite;
+}
+.lp-collage-steam {
+  position: absolute;
+  top: 0;
+  left: 30%;
+  color: var(--color-forest);
+  opacity: 0.28;
+  z-index: 6;
+  animation: lp-steam-rise 5s ease-in-out infinite;
+}
+
+@keyframes lp-twinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+  50%      { transform: scale(1.22) rotate(18deg); opacity: 1; }
+}
+@keyframes lp-steam-rise {
+  0%, 100% { transform: translateY(0); opacity: 0.28; }
+  50%      { transform: translateY(-10px); opacity: 0.45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-collage-float-a,
+  .lp-collage-float-b,
+  .lp-collage-float-c,
+  .lp-badge-svg,
+  .lp-collage-spark,
+  .lp-collage-steam,
+  .lp-eyebrow-dot,
+  .lp-hero-arrow,
+  .hero-heading,
+  .highlight-oval {
+    animation: none !important;
+  }
+  .lp-collage-main,
+  .lp-collage-side,
+  .lp-collage-wide,
+  .lp-collage-halo {
+    transform: none !important;
+  }
+  /* The script line tilts via transform, so it has to be neutralised
+     separately from the animation reset above. */
+  .hero-script {
+    transform: none !important;
+  }
+}
+
+/* Scroll cue.
+
+   Lives in the narrative column, in normal flow, directly under the CTAs. It
+   used to be absolutely positioned against the hero's bottom edge, which meant
+   it sat below the fold on any viewport where the hero is naturally taller
+   than the screen - which is most of them - and needed a height media query to
+   hide itself. In flow it simply goes wherever the copy goes, so it cannot be
+   clipped, cannot overlap the collage, and needs no breakpoint to hide it.
+
+   The line is horizontal to match its new inline orientation, so the draw
+   animation runs on scaleX rather than the vertical version it replaced. */
+.lp-scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  margin-top: 28px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--dur-base) var(--ease-out-soft);
+}
+.lp-scroll-cue:hover { color: var(--color-forest); }
+.lp-scroll-cue:focus-visible {
+  outline: 2px solid var(--color-forest);
+  outline-offset: 4px;
+  border-radius: var(--radius-xs);
+}
+.lp-scroll-cue-line {
+  width: 42px;
+  height: 1.5px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  background: currentColor;
+  transform-origin: left center;
+  animation: lp-cue 2.2s var(--ease-out-soft) infinite;
+}
+.lp-scroll-cue-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+@keyframes lp-cue {
+  0%   { transform: scaleX(0); opacity: 0.35; }
+  45%  { transform: scaleX(1); opacity: 1; }
+  55%  { transform: scaleX(1); opacity: 1; transform-origin: right center; }
+  100% { transform: scaleX(0); opacity: 0.35; transform-origin: right center; }
+}
+/* The cue is absolutely positioned against the hero's bottom edge. It is only
+   shown when the hero is short enough that this edge — and therefore the cue —
+   lands inside the first screen. On a 1366x768 laptop the hero is naturally
+   ~85px taller than the viewport, so the cue would render off-screen; hiding it
+   there is correct, since showing a "scroll down" hint below the fold is worse
+   than showing none. Nothing is resized to make room. */
+@media (min-width: 900px) {
+  .lp-scroll-cue { gap: 13px; }
+  .lp-scroll-cue-line { width: 56px; }
+}
+
+/* ============================================================
+   HOW IT WORKS
+   ============================================================ */
+.lp-how { background: var(--color-bg); }
+
+.lp-steps {
+  position: relative;
+  display: grid;
+  gap: 40px;
+}
+
+.lp-steps-connector {
+  display: none;
+  position: absolute;
+  top: 30px;
+  left: 4%;
+  width: 92%;
+  height: 130px;
+  color: var(--color-hairline-2);
+  overflow: visible;
+}
+
+/* The faint solid route, so the path still reads as a route before the
+   dotted overlay has drawn itself over it. */
+.lp-steps-connector-track {
+  opacity: 0.4;
+}
+
+/* The dotted overlay, revealed by an animated stroke-dashoffset. */
+.lp-steps-connector-draw {
+  opacity: 1;
+}
+
+.lp-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 34px 26px 30px;
+  background: var(--color-cream);
+  border: 1.5px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--dur-base) var(--ease-out-soft),
+    box-shadow var(--dur-base) var(--ease-out-soft);
+}
+.lp-step:hover {
+  transform: translate3d(0, -4px, 0);
+  box-shadow: var(--shadow-lg);
+}
+
+.lp-step-num {
+  position: absolute;
+  top: -26px;
+  left: 22px;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  background: var(--color-cream);
+  border-radius: 50%;
+  z-index: 2;
+}
+.lp-step-num-text {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-orange);
+}
+.lp-step-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--color-forest);
+}
+
+.lp-step-photo {
+  margin: 6px 0 22px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-sage-light);
+}
+.lp-step-kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+}
+.lp-step-title {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.08;
+  color: var(--color-forest);
+}
+.lp-step-body {
+  margin: 12px 0 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 760px) {
+  .lp-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; }
+  .lp-steps-connector { display: block; }
+  .lp-step { padding: 38px 30px 34px; }
+  .lp-step:nth-child(2) { margin-top: 26px; }
+  .lp-step:nth-child(3) { margin-top: 52px; }
+}
+
+/* ============================================================
+   FEATURE BENTO
+   ============================================================ */
+.lp-features { background: var(--color-sage-soft); }
+
+.lp-bento {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.lp-bento-card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 28px 26px 30px;
+  background: var(--color-cream);
+  border: 1.5px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+  transition:
+    transform var(--dur-base) var(--ease-out-soft),
+    box-shadow var(--dur-base) var(--ease-out-soft),
+    border-color var(--dur-base) var(--ease-out-soft);
+}
+.lp-bento-card:hover {
+  transform: translate3d(0, -5px, 0);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-hairline-2);
+}
+/* Cursor-tracked wash of light. Sits under the content and fades in on hover;
+   the coordinates arrive as custom properties from BentoCard's pointermove. */
+.lp-bento-spot {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out-soft);
+  background: radial-gradient(
+    260px circle at var(--lp-spot-x, 50%) var(--lp-spot-y, 50%),
+    rgba(107, 155, 97, 0.26),
+    rgba(107, 155, 97, 0) 70%
+  );
+}
+.lp-bento-card:hover .lp-bento-spot { opacity: 1; }
+
+.lp-bento-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--color-sage-soft);
+  color: var(--color-forest);
+}
+.lp-bento-title {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  line-height: 1.1;
+  color: var(--color-forest);
+}
+.lp-bento-body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+.lp-bento-spark {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  color: var(--color-orange);
+  opacity: 0;
+  transform: scale(0.6) rotate(-20deg);
+  transition:
+    opacity var(--dur-base) var(--ease-out-soft),
+    transform var(--dur-base) var(--ease-out-soft);
+}
+.lp-bento-card:hover .lp-bento-spark {
+  opacity: 0.85;
+  transform: scale(1) rotate(0deg);
+}
+
+@media (min-width: 620px) {
+  .lp-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lp-bento-wide { grid-column: span 2; }
+}
+
+@media (min-width: 980px) {
+  .lp-bento { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .lp-bento-wide { grid-column: span 2; }
+  .lp-bento-tall { grid-column: span 2; }
+  .lp-bento-tall .lp-bento-body { max-width: 46ch; }
+}
+
+/* ============================================================
+   PARALLAX PHOTO BAND
+   ============================================================ */
+.lp-band { position: relative; }
+
+.lp-band-frame {
+  position: relative;
+  height: clamp(440px, 66vh, 720px);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lp-band-media {
+  position: absolute;
+  inset: -14% 0;
+  will-change: transform;
+}
+.lp-band-media-inner { position: absolute; inset: 0; }
+.lp-band-img { width: 100%; height: 100%; object-fit: cover; }
+
+.lp-band-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(30, 59, 27, 0.72) 0%,
+    rgba(30, 59, 27, 0.5) 45%,
+    rgba(30, 59, 27, 0.82) 100%
+  );
+}
+
+.lp-band-quote-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  padding: 48px var(--lp-gutter);
+  text-align: center;
+}
+
+/* Was .lp-band-quote, styled for the invented student testimonial that used
+   to sit in this overlay. Renamed to -line with the same treatment, because
+   what renders here now is a plain product statement rather than a quote. */
+.lp-band-line {
+  margin: 0;
+  max-width: 24ch;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3.8vw, 39px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.022em;
+  color: var(--color-cream);
+}
+
+.lp-band-cite {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 8px 18px 8px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(245, 240, 232, 0.14);
+  border: 1px solid rgba(245, 240, 232, 0.24);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-cream);
+}
+.lp-band-cite svg { color: var(--color-gold); flex-shrink: 0; }
+
+/* ============================================================
+   COUNTER GALLERY
+   ============================================================ */
+.lp-counter { background: var(--color-bg); }
+
+.lp-gallery {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 6px var(--lp-gutter) 20px;
+  cursor: grab;
+}
+.lp-gallery::-webkit-scrollbar { display: none; }
+.lp-gallery.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.lp-gallery-item {
+  position: relative;
+  flex: 0 0 auto;
+  width: min(74vw, 300px);
+  margin: 0;
+  scroll-snap-align: start;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-cream);
+  box-shadow: var(--shadow-md);
+}
+.lp-gallery-img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform 0.6s var(--ease-out-soft);
+}
+.lp-gallery-item:hover .lp-gallery-img { transform: scale(1.09); }
+
+.lp-gallery-cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 44px 16px 16px;
+  background: linear-gradient(180deg, rgba(15, 30, 13, 0) 0%, rgba(15, 30, 13, 0.78) 68%);
+}
+.lp-gallery-caption {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-cream);
+}
+.lp-gallery-note {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--color-cream-faint);
+}
+
+.lp-gallery-rail {
+  position: relative;
+  height: 3px;
+  max-width: 260px;
+  margin: 6px auto 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-hairline-2);
+  display: none;
+}
+.lp-gallery-rail-hint {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+@media (min-width: 700px) {
+  .lp-gallery-rail { display: block; }
+}
+
+/* ============================================================
+   DOODLE ART SHOWCASE
+   ============================================================ */
+/* The 1px top/bottom hairlines that used to frame this band are gone. They
+   read as hard rules cutting the page into labelled blocks; the band is now
+   separated from its neighbours by the background tone alone. */
+.lp-art {
+  background: var(--color-cream);
+}
+
+/* DoodleShowcase used to centre its whole header - text-align: center with
+   align-items: center and a wider 24ch measure - while every other section
+   left-aligned against a shared measure. That was the visible misalignment.
+   It now inherits the same left axis and measure as the rest of the page. */
+.lp-art-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 12px;
+}
+
+.lp-art-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  padding: 24px 12px 20px;
+  border-radius: var(--radius-md);
+  background: var(--color-sage-soft);
+  border: 1.5px solid transparent;
+  transition:
+    background-color var(--dur-base) var(--ease-out-soft),
+    border-color var(--dur-base) var(--ease-out-soft),
+    transform var(--dur-base) var(--ease-out-soft);
+}
+.lp-art-tile:hover {
+  background: #fff;
+  border-color: var(--color-hairline-2);
+  transform: translate3d(0, -4px, 0) rotate(-1deg);
+}
+.lp-art-mark { color: var(--color-forest); display: block; }
+.lp-art-tile:hover .lp-art-mark { color: var(--color-orange); }
+.lp-art-mark svg {
+  display: block;
+  transition: transform var(--dur-base) var(--ease-out-soft);
+}
+.lp-art-tile:hover .lp-art-mark svg { transform: scale(1.08) rotate(3deg); }
+
+.lp-art-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.lp-art-foot {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+.lp-art-foot-squiggle {
+  width: min(260px, 70vw);
+  color: var(--color-orange);
+  opacity: 0.6;
+}
+
+@media (min-width: 900px) {
+  .lp-art-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+  }
+}
+
+/* ============================================================
+   FAQ
+   ============================================================ */
+.lp-faq { background: var(--color-bg); }
+.lp-faq-inner {
+  display: grid;
+  gap: 40px;
+  align-items: start;
+}
+.lp-faq-intro { position: relative; }
+.lp-faq-sprig {
+  position: absolute;
+  top: 8px;
+  right: 4%;
+  color: var(--color-leaf);
+  opacity: 0.4;
+  animation: lp-sway 7s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+@keyframes lp-sway {
+  0%, 100% { transform: rotate(-4deg); }
+  50%      { transform: rotate(4deg); }
+}
+
+.lp-faq-list { display: flex; flex-direction: column; gap: 10px; }
+
+.lp-faq-item {
+  background: var(--color-cream);
+  border: 1.5px solid var(--color-hairline);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition:
+    border-color var(--dur-base) var(--ease-out-soft),
+    box-shadow var(--dur-base) var(--ease-out-soft);
+}
+.lp-faq-item.is-open {
+  border-color: var(--color-hairline-2);
+  box-shadow: var(--shadow-sm);
+}
+.lp-faq-item h3 { margin: 0; }
+
+.lp-faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  padding: 20px 22px;
+  text-align: left;
+  font-size: 15.5px;
+  font-weight: 700;
+  line-height: 1.32;
+  color: var(--color-forest);
+}
+.lp-faq-q:hover { color: var(--color-forest-deep); }
+
+.lp-faq-sign {
+  position: relative;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+.lp-faq-sign-h,
+.lp-faq-sign-v {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-forest);
+  transform: translate(-50%, -50%);
+  transition:
+    transform var(--dur-base) var(--ease-out-soft),
+    opacity var(--dur-fast) linear;
+}
+.lp-faq-sign-v { transform: translate(-50%, -50%) rotate(90deg); }
+.lp-faq-item.is-open .lp-faq-sign-v {
+  transform: translate(-50%, -50%) rotate(0deg);
+  opacity: 0;
+}
+
+/* The open/close motion is owned by framer's height transition in the Faq
+   component, which animates both directions. This block is padding only — an
+   entrance keyframe here would double up with it. */
+.lp-faq-a {
+  padding: 0 22px 22px;
+}
+.lp-faq-a p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 900px) {
+  .lp-faq-inner {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 64px;
+  }
+  .lp-faq-intro { position: sticky; top: 120px; }
+}
+
+/* ============================================================
+   CLOSING CTA
+   ============================================================ */
+.lp-cta {
+  position: relative;
+  padding: 104px 0;
+  background: var(--grad-forest);
+  color: var(--color-cream);
+  overflow: hidden;
+  text-align: center;
+}
+.lp-cta-art { position: absolute; inset: 0; pointer-events: none; }
+
+/* Outer layer: positioning only. Holds the scroll-linked transform framer
+   drives, so it must not also carry a CSS animation (see CtaDoodle). */
+.lp-cta-drift { position: absolute; display: block; }
+.lp-cta-drift-1 { top: 10%; left: 6%; }
+.lp-cta-drift-2 { bottom: 12%; right: 8%; }
+.lp-cta-drift-3 { top: 18%; right: 12%; }
+
+/* Inner layer: the mark itself, plus its ambient loop. */
+.lp-cta-doodle {
+  position: relative;
+  display: block;
+  color: var(--color-cream);
+  opacity: 0.16;
+}
+.lp-cta-doodle-1 { animation: lp-slow-spin 44s linear infinite; }
+.lp-cta-doodle-2 {
+  animation: lp-sway 8s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+.lp-cta-doodle-3 { animation: lp-steam-rise 6s ease-in-out infinite; }
+.lp-cta-hills {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 120px;
+  color: var(--color-sage);
+  opacity: 0.14;
+}
+
+@keyframes lp-slow-spin {
+  to { transform: rotate(360deg); }
+}
+
+.lp-cta-inner {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 var(--lp-gutter);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+.lp-cta-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5.4vw, 57px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--color-cream);
+  max-width: 16ch;
+}
+.lp-cta-lede {
+  margin: 0 0 8px;
+  max-width: 52ch;
+  font-size: 16px;
+  line-height: 1.62;
+  color: var(--color-cream-muted);
+}
+
+@media (min-width: 900px) {
+  .lp-cta { padding: 96px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-cta-doodle { animation: none !important; }
+  .lp-faq-sprig { animation: none !important; }
+  .lp-scroll-cue-line { animation: none !important; }
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.lp-footer {
+  background: var(--color-forest-deep);
+  color: var(--color-cream-muted);
+  padding: 64px 0 30px;
+}
+.lp-footer-inner {
+  display: grid;
+  gap: 44px;
+  max-width: var(--lp-max);
+  margin: 0 auto;
+  padding: 0 var(--lp-gutter);
+}
+.lp-footer-brand { position: relative; max-width: 42ch; }
+.lp-footer-tag { margin: 18px 0 0; font-size: 14px; line-height: 1.6; }
+.lp-footer-doodle {
+  position: absolute;
+  bottom: -6px;
+  right: 0;
+  color: var(--color-cream);
+  opacity: 0.18;
+}
+
+.lp-footer-cols {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+.lp-footer-col { display: flex; flex-direction: column; gap: 11px; }
+.lp-footer-col h4 {
+  margin: 0 0 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-sage-light);
+}
+.lp-footer-col a {
+  font-size: 14px;
+  color: var(--color-cream-muted);
+  transition:
+    color var(--dur-fast) var(--ease-out-soft),
+    transform var(--dur-base) var(--ease-out-soft);
+  width: fit-content;
+}
+.lp-footer-col a:hover {
+  color: var(--color-cream);
+  transform: translateX(3px);
+}
+
+.lp-footer-base {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  max-width: var(--lp-max);
+  margin: 48px auto 0;
+  padding: 22px var(--lp-gutter) 0;
+  font-size: 12px;
+  color: var(--color-cream-faint);
+}
+.lp-footer-base-note {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+}
+
+@media (min-width: 900px) {
+  .lp-footer-inner {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+    gap: 64px;
+  }
+}
+
+/* ============================================================
+   RENDER BUDGET — below-the-fold sections skip layout until needed
+   ============================================================ */
+@media (min-width: 900px) {
+  .lp-how,
+  .lp-features,
+  .lp-counter,
+  .lp-art,
+  .lp-faq,
+  .lp-footer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION — ambient loops only
+   ============================================================
+   Everything scroll- and pointer-driven is already handled in JS
+   (useReducedMotion / useInViewOnce park the transform, and
+   useScrollFloat returns {}). What remains are the pure-CSS ambient
+   loops, which have no JS to consult, so they are switched off here.
+   The layouts are unaffected: each of these only ever wrote
+   `transform`/`opacity`, never geometry. */
+@media (prefers-reduced-motion: reduce) {
+  .lp-drift,
+  .lp-drift-1,
+  .lp-drift-2,
+  .lp-drift-3,
+  .lp-eyebrow-dot,
+  .lp-cta-doodle-1,
+  .lp-cta-doodle-2,
+  .lp-cta-doodle-3,
+  .lp-collage-float-a,
+  .lp-collage-float-b,
+  .lp-collage-float-c,
+  .lp-badge-svg,
+  .lp-scroll-cue-line {
+    animation: none !important;
+  }
+
+  /* The collage drift and badge spin fall back to their resting frames. */
+  .lp-collage-float-a,
+  .lp-collage-float-b,
+  .lp-collage-float-c { transform: none; }
+  .lp-cta-doodle-2 { transform: none; }
+
+  .lp-bento-card:hover { transform: none; }
+  .lp-bento-spot { display: none; }
+
+  /* Grain is static texture, not motion, so it stays. */
+}

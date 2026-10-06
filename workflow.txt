@@ -1,0 +1,321 @@
+================================================================================
+CANTEEN BOOKING APPLICATION — COMPREHENSIVE PROJECT WORKFLOW & TIMELINE
+================================================================================
+Project: Canteen Booking (FastAPI + React Vite)
+Design System: More Nutrition Aesthetic (Founders Grotesk Condensed / Sage & Forest)
+Last Updated: 2026-09-25
+
+--------------------------------------------------------------------------------
+1. PROJECT ARCHITECTURE & CORE STACK
+--------------------------------------------------------------------------------
+Backend:
+- FastAPI (Python 3.11+) asynchronous REST API
+- SQLAlchemy ORM with SQLite (Development) / PostgreSQL (Production)
+- Pydantic v2 schemas for request validation & serialization
+- JWT authentication with role-based access control (Student & Vendor)
+- Twilio SMS / OTP service with development console bypass
+- Uvicorn ASGI server running on port 8080 (0.0.0.0 for LAN access)
+
+Frontend:
+- React 18 with Vite SPA architecture
+- TanStack React Query for caching, optimistic updates, and background refetching
+- Framer Motion for spring physics, sheet modals, and page transitions
+- Canvas-Confetti & Web Audio API for feedback
+- Pure vanilla CSS custom properties design system (Single-file index.css)
+- Vite proxy mapping /api and /uploads to http://127.0.0.1:8080
+
+--------------------------------------------------------------------------------
+2. COMPLETED WORK LOG & CHRONOLOGICAL PHASES
+--------------------------------------------------------------------------------
+
+PHASE 1: Core Backend & Database Infrastructure
+- Implemented database models: User, Role (Student/Vendor), Vendor, MenuItem,
+  Order, OrderItem, Review, and PickupToken.
+- Built authentication flow with phone number OTP verification.
+- Built student endpoints: list open vendors, vendor menus, place order, list orders,
+  submit rating/review with photo upload.
+- Built vendor endpoints: live order queue, accept/prep/ready status lifecycle,
+  6-digit pickup token verification with QR scanning.
+
+PHASE 2: Frontend Shell, State Management & Cart Architecture
+- Created React application shell with custom routing for Student & Vendor portals.
+- Implemented AuthProvider with session token persistence in localStorage.
+- Built CartProvider context for multi-vendor order handling, item quantity
+  steppers, line totals, and discount computation.
+- Built OrderTicket, OrderTracker, and Mascot-on-Track progress components.
+
+PHASE 3: Critical Bug Fixes & Network Stabilization
+- Fixed cart crashing bug where CheckoutSheet destructured missing properties
+  (items, totalItems, clear, removeItem) from useCart.
+- Fixed backend proxy connection error by standardizing on port 8080 for backend
+  and port 5173 with --host for frontend LAN access (192.168.137.1).
+- Resolved dev mode OTP authentication flow for quick testing.
+
+PHASE 4: "More Nutrition" Editorial Aesthetic Redesign
+- URL Reference: https://more-nutrition.webflow.io/
+- Palette Transformation:
+  * Body background: Sage Green (#B6CBA5)
+  * Primary CTAs & Headings: Forest Dark (#335C30 / #1E3B1B)
+  * Cards & Modals: Warm Cream (#F5F0E8)
+  * Accents: Amber Gold (#C9A227) & Mustard (#8B6914)
+- Extracted & integrated the exact font from More Nutrition:
+  * "Founders Grotesk Condensed" (Weights 400, 500, 600) via preloaded WOFF2 fonts
+  * Fallback to DM Sans and DM Mono for tabular pricing and timestamps
+- Added editorial components:
+  * Scrolling infinite Marquee strip with canteen benefits
+  * Stat facts counter strip (10 min avg ready, 0 queue wait, 100% fresh)
+  * Pill-shaped CTAs and floating bag cart bar
+
+PHASE 5: Visual Media & Photo Upgrade (Emoji Removal)
+- Replaced emoji category icons with real high-resolution food photography:
+  * Salads, Sushi, Pizza, Cakes, Drinks, and Bowls
+- Replaced place/stall emojis with real storefront/bistro photography.
+- Replaced ingredient emojis with clean real photo thumbnail chips.
+- Replaced all status emojis across the app with professional vector SVG icons:
+  * OrderTracker: Document, Chef Shield, Cooking Flame, Ready Bell, Checkmark
+  * ItemDetailModal: Clean SVG Favorite Heart and Clock duration badge
+  * MenuItemCard: Clean SVG prep duration indicator
+  * CheckoutSheet: Animated SVG checkmark and clean order confirmation
+  * VendorDashboard: Vector token search scanner and completion checkmark
+  * ReviewBottomSheet: Clear text rating labels (Excellent, Very Good, Good, Fair, Needs Improvement)
+
+PHASE 6: Mobile & Cross-Device Responsiveness Fixes
+- Fixed category & stall circular item clipping/cut-off on selection by adding
+  adequate container vertical padding and refined outline glow rings.
+- Added iOS Safari auto-zoom prevention by enforcing minimum 16px font-size on all inputs.
+- Configured safe-area insets (env(safe-area-inset-top) and env(safe-area-inset-bottom))
+  for iPhone notch and home indicator bar.
+- Enhanced touch manipulation: touch-action: pan-x / pan-y and tap highlight removal.
+- Made 2-column popular dishes grid responsive with minmax(0, 1fr) to prevent overflow.
+- Added image onError fallbacks to protect against cellular network drops.
+
+PHASE 7: Dynamic Dietary Preference Engine
+- Added student dietary preference selector in Profile (No Restrictions, Pure Veg, Vegan, Halal/Organic).
+- Persisted dietary preference in localStorage across sessions and tabs with live window focus synchronization.
+- Added interactive Dietary Filter bar on the Student Menu home page with live dish counts.
+- Added 'All Dishes' top category to display all available foods matching the student's dietary profile immediately upon opening the app.
+- Implemented real-time item matching (matchesDietaryPreference) so the menu
+  automatically populates only with food currently available and matching the active preference.
+
+PHASE A: Institution Admin Layer & System Announcements
+- Added UserRole.admin enum and get_current_admin JWT dependency.
+- Implemented admin provisioning endpoint (POST /api/v1/admin/users) with X-Admin-Key protection.
+- Built full Vendor Management API:
+  * GET /api/v1/admin/vendors (live aggregated stats: item count, order count, total revenue, rating)
+  * PATCH /api/v1/admin/vendors/{id}/suspend (sets is_active=False and hides vendor menu from students)
+  * PATCH /api/v1/admin/vendors/{id}/reactivate (restores active status)
+- Built Platform-wide Live Order Lookup (GET /api/v1/admin/orders) with filtering by status, vendor, student, and date.
+- Built Live Database Analytics Summary (GET /api/v1/admin/analytics/summary) calculating real total orders, platform revenue, active vendors/students counts, today vs yesterday comparison, and peak hourly order volume histogram.
+- Built System Announcements feature:
+  * Database table & model: announcements with expiration timestamps and admin foreign key
+  * Admin CRUD endpoints: POST /api/v1/admin/announcements, GET /api/v1/admin/announcements, DELETE /api/v1/admin/announcements/{id}
+  * Public endpoint: GET /api/v1/announcements (active, non-expired notices)
+  * Frontend: Dismissible AnnouncementBanner on student & vendor screens; Announcement Manager in Admin Dashboard
+- Frontend: Admin Dashboard page (/admin) with 4 tabs (Overview, Vendors, Live Orders, Announcements) using More Nutrition visual styling.
+- Added Alembic migration 0003_admin_announcements.py and full test coverage in test_phase_a_admin.py (38/38 tests passing).
+
+PHASE B: Wallet & Prepaid Campus Balance Ledger
+- Added wallet_balance and low_balance_threshold columns to users table with zero/default fallback.
+- Created wallet_transactions double-entry ledger model with transaction types (topup, order_payment, refund, admin_adjustment, meal_plan_purchase), balance_after, and order foreign key.
+- Built Admin Wallet Adjustment mechanism (POST /api/v1/admin/wallet/adjust) with mandatory audit reason notes (internal ledger model — zero fake gateway code).
+- Built Student Wallet endpoints:
+  * GET /api/v1/student/wallet (live balance, low balance alert flag, full transaction history)
+  * PATCH /api/v1/student/wallet/threshold (customizable low balance alert threshold)
+- Implemented Single-Transaction Atomic Order Checkout & Auto-Refund:
+  * Order placement with payment_method="wallet" validates balance >= total_amount and deducts amount atomically within the same DB transaction.
+  * Auto-refund on cancellation/rejection: when an order paid via wallet is cancelled or rejected, total_amount is automatically refunded and logged in ledger.
+- Frontend:
+  * Created StudentWallet page (/student/wallet) with live balance, low-balance alert, threshold adjuster, and full transaction history cards.
+  * Added Prepaid Wallet Banner in StudentProfile (/student/profile).
+  * Upgraded CheckoutSheet with payment method switcher ("Prepaid Campus Wallet" vs "Pay at Counter"), live balance check, shortage warning, and submission gating.
+  * Added Student Wallets & Top-up tab in AdminDashboard (/admin) with student lookup search and balance adjustment tool.
+- Added Alembic migration 0004_wallet_ledger.py and comprehensive test suite in test_phase_b_wallet.py (42/42 tests passing).
+
+PHASE C: Queue Depth & Slot-Based Pickup Intelligence
+- Implemented PickupSlot model and Alembic migration 0005_pickup_slots.py (start_time, end_time, max_orders, current_order_count, is_active).
+- Implemented live queue depth computation (active orders count per vendor) and estimated wait time calculation.
+- Built Vendor Pickup Slot Management API:
+  * POST /api/v1/vendor/slots (create custom or 15-minute slot intervals with maximum capacity cap)
+  * GET /api/v1/vendor/slots (list all vendor slots with live booking count)
+  * DELETE /api/v1/vendor/slots/{id} (delete / deactivate slot)
+- Built Student Pickup Slot Selection API:
+  * GET /api/v1/student/vendors/{id}/slots (browse available windows with capacity remaining)
+  * Extended order placement to validate and decrement/increment slot capacity atomically on order lifecycle transitions.
+- Frontend:
+  * StudentMenu: Live vendor queue badge showing queue depth and estimated wait time (e.g. 🟢 3 in queue (~9m wait)).
+  * CheckoutSheet: Interactive 15-minute pickup window selector with live remaining capacity indicators.
+  * VendorDashboard: "Pickup Slots" management tab with single-click "Auto-Generate Lunch Rush (12:00 - 13:30)" helper and capacity trackers.
+- Added test coverage in test_phase_c_slots.py (44/44 tests passing).
+
+PHASE D: Subscription / Meal Plans & Passes
+- Implemented MealPlan and MealPlanSubscription models and Alembic migration 0006_meal_plans.py (name, description, price, total_meals, validity_days, meals_remaining, expires_at).
+- Built Vendor Meal Plan Management API:
+  * POST /api/v1/vendor/meal-plans (create bulk prepaid bundles, e.g. 10-Thali Lunch Pack)
+  * GET /api/v1/vendor/meal-plans (list published plans)
+  * PATCH /api/v1/vendor/meal-plans/{id} (toggle active/pause)
+- Built Student Meal Plan Subscription & Redemption API:
+  * GET /api/v1/student/meal-plans (browse available vendor pass bundles)
+  * POST /api/v1/student/meal-plans/{id}/subscribe (purchase pass debited atomically from campus wallet ledger)
+  * GET /api/v1/student/my-meal-plans (track active passes, meals remaining count, and expiration dates)
+  * Extended place_order to support payment_method="meal_plan" deducting 1 meal credit from active subscription, with automatic meal credit restoration on order cancellation/rejection.
+- Frontend:
+  * Created StudentMealPlans page (/student/meal-plans) with active passes counter and available passes catalog.
+  * Linked Meal Passes directly from StudentProfile with gradient banner.
+  * Integrated "Redeem Meal Pass" option in CheckoutSheet for vendors where student has an active pass.
+  * Added "Meal Plans" tab in VendorDashboard with creation form and pause/resume controls.
+- Added test coverage in test_phase_d_meal_plans.py (45/45 tests passing).
+
+PHASE E: Class Schedule & Timing Intelligence
+- Implemented ClassScheduleEntry model and Alembic migration 0007_class_schedule.py (day_of_week 0-6, class_name, start_time, end_time, location).
+- Built Student Schedule & Timing Intelligence API:
+  * POST /api/v1/student/schedule (add lecture time window)
+  * GET /api/v1/student/schedule (list weekly timetable)
+  * DELETE /api/v1/student/schedule/{id} (remove lecture)
+  * GET /api/v1/student/schedule/upcoming-break (calculates student's current lecture status, time until next break, upcoming class, and smart ordering recommendation).
+- Frontend:
+  * Created StudentSchedule page (/student/schedule) with day-by-day tabs, lecture creation form, and live timing intelligence card.
+  * Added "Class Schedule & Timing" banner in StudentProfile.
+  * Added smart lecture break banner directly on StudentMenu home screen with dynamic countdown and pre-order advice.
+- Added test coverage in test_phase_e_schedule.py (46/46 tests passing).
+
+PHASE F: Nutrition & Allergen Filtering
+- Extended MenuItem model with calories, protein_g, carbs_g, fat_g, allergens, and is_vegan flag.
+- Extended User model with allergen_filters avoidance list; created Alembic migration 0008_nutrition_allergens.py.
+- Built Allergen Safety & Nutrition Management API:
+  * GET /api/v1/student/allergens (query student's active allergen restrictions)
+  * PATCH /api/v1/student/allergens (update excluded allergens list)
+  * Vendor menu item create/update endpoints updated to validate and persist nutrition macros and comma-separated allergen tags.
+- Frontend:
+  * MenuItemCard: Displays nutrition macro badge (e.g. 🔥 450 kcal • 22.5g P).
+  * ItemDetailModal: Complete Nutrition Facts strip (Energy, Protein, Carbs, Fat) and allergen warning badges.
+  * StudentProfile: Interactive Allergen Safety Filters (Dairy, Gluten, Peanuts, Tree Nuts, Soy, Eggs, Shellfish).
+  * MenuItemForm: Form inputs for calories, protein, carbs, fat, allergens, and 100% vegan toggle.
+- Added test coverage in test_phase_f_nutrition.py (47/47 tests passing).
+
+PHASE G: Social / Campus Community (Hostel Blocks & Leaderboard)
+- Extended User model with hostel_block, department, and leaderboard_opt_in flag; created Alembic migration 0009_social_campus.py.
+- Built Campus Social & Community API:
+  * PATCH /api/v1/student/profile/social (update hostel block, department major, and leaderboard opt-in status)
+  * GET /api/v1/student/leaderboard (aggregates real completed order totals across opted-in students, returning 1-indexed rankings and enrollment statistics).
+- Frontend:
+  * Created StudentLeaderboard page (/student/leaderboard) with podium medals (🥇 Gold, 🥈 Silver, 🥉 Bronze), live order count, hostel block badges, and 1-tap opt-in switch.
+  * Added "Campus Foodie Leaderboard" card in StudentProfile.
+  * Added "Campus Identity & Hostel" editor form in StudentProfile.
+PHASE H: Sustainability Features (BYO Container & Cutlery Reduction)
+- Extended Order model with cutlery_needed (bool, default True), reusable_container (bool, default False), and container_discount (Numeric 10,2, default 0.00).
+- Created Alembic migration 0010_sustainability.py.
+- Built Sustainability Order Processing & Pricing:
+  * Order placement calculates reusable container eco-discount (₹5 flat discount deducted from order total).
+  * Tracks cutlery decline preference and BYO container usage per order.
+- Built Student Sustainability API:
+  * GET /api/v1/student/sustainability-stats (aggregates real DB metrics: cutlery_saved_count, containers_reused_count, total_eco_saved_amount, plastic_saved_grams).
+- Frontend:
+  * CheckoutSheet: Eco-choices toggle box ("No Cutlery - Zero Waste" & "Bring My Own Container / Dabba (₹5 OFF)") and dynamic discount calculation.
+  * StudentProfile: "My Green Campus Impact" card with live plastic waste prevented stats and eco-savings counter.
+  * VendorOrderCard: Badges for BYO CONTAINER and NO CUTLERY to ensure canteen staff packs food into student's container.
+- Added test coverage in test_phase_h_sustainability.py (49/49 tests passing).
+
+PHASE I: Operational Waste Reduction (Flash Discounts & Hourly Demand)
+- Extended MenuItem model with is_flash_discount (bool, default False) and flash_discount_percent (int, default 0).
+- Added @property effective_price to MenuItem model for automatic price discounting.
+- Created Alembic migration 0011_operational_waste.py.
+- Built Operational Waste Management API:
+  * PATCH /api/v1/vendor/menu/{id}/flash-discount (activate/deactivate surplus flash discounts)
+  * GET /api/v1/vendor/analytics/demand-by-hour (hourly order volume and revenue histogram across 24h)
+  * Order placement automatically validates and applies flash discounted prices at checkout.
+- Frontend:
+  * MenuItemCard & ItemDetailModal: Flash Deal badges (e.g. ⚡ 20% OFF) and strikethrough original prices.
+  * MenuItemForm: Flash Discount toggle and discount percentage selector for surplus sale.
+  * VendorDashboard: "Demand & Rush Hours" analytics tab with interactive Hourly Demand histogram and peak hour indicators.
+- Added test coverage in test_phase_i_operations.py (50/50 tests passing).
+
+PHASE J: Multi-Language Support & Final System Verification
+- Created LanguageContext (LanguageProvider and useLanguage hook) supporting English and Hindi (हिन्दी) with persistent localStorage synchronization.
+- Wrapped main React tree with LanguageProvider.
+- Added Language Switcher pill in StudentLayout topbar (🇬🇧 EN / 🇮🇳 हिन्दी) and in StudentProfile preferences.
+- Translated student navigation tabbar, actions, eco-choices, and status labels.
+- Performed complete system test verification:
+  * Pytest Suite: 50 passed tests across 14 test modules (100% passing).
+  * Frontend Vite Build: npm run build completed with 0 errors.
+
+PHASE K: Authentication Flow Rebuild & Vendor Self-Registration Gate
+- Rebuilt authentication architecture to support vendor self-registration with an approval gate:
+  * Added is_approved (bool, default False) and stall_photo_url (str, optional) to User model.
+  * Created Alembic migration 0012_vendor_registration_approval.py and updated auto_migrate.py.
+  * New endpoint POST /api/v1/auth/register-vendor: allows canteen vendors to register directly with phone, name, shop name, and stall photo.
+  * Vendor visibility gating: Unapproved vendors (is_approved=False) can log in with OTP to set up menus and slots, but are hidden from student vendor discovery and order placement until approved.
+  * Admin approval workflow: GET /api/v1/admin/vendors/pending and PATCH /api/v1/admin/vendors/{id}/approve in Admin API.
+  * Vendor profile update: PATCH /api/v1/vendor/profile for updating shop name, manager name, and stall photo.
+- Redesigned Frontend Authentication Flow (Login.jsx):
+  * Single-page multi-step animated experience using Framer Motion with horizontal slide transitions.
+  * Interactive mascot hero with gentle floating animation (respecting prefers-reduced-motion).
+  * Segmented Role selector (Student / Canteen Partner / Admin) and Mode switcher (Sign In / Create Account).
+  * 6 individual OTP digit boxes with auto-focus, auto-advance, backspace navigation, paste support, and instant auto-submission on 6th digit.
+  * Student and Vendor self-registration workflows with live photo upload via ImageUploader.
+- Updated VendorDashboard, AdminDashboard, and Student VendorCard:
+  * VendorDashboard: Prominent pending-approval banner and new "Stall Profile" tab for managing photos & names.
+  * AdminDashboard: New "Pending Approvals" tab with stall photo previews and single-click "Approve Stall" action.
+  * VendorCard: Displays stall photo thumbnail with fallback to bite mascot.
+- Comprehensive Test Verification:
+  * Added test_auth_vendor_registration.py covering self-registration, gating, OTP login, and admin approvals.
+  * 53/53 pytest backend unit & integration tests passing (100%).
+  * npm run build compiled with 0 errors.
+
+PHASE L: Application-Wide Emoji Removal & Notification Modal Enhancement
+- Global Emoji Elimination:
+  * Completely purged unicode emojis (flags, plants, lightning bolts, medals, medals, ingredients, warning triangles, etc.) from all frontend components and translation dictionaries.
+  * Replaced emojis with clean editorial typography, badge pills, SVG vector graphics, and standard ASCII/unicode mathematical symbols (✕, ★, ✓).
+  * Updated language picker to display native text labels ("हिन्दी" / "English").
+  * Cleaned StudentLayout, LanguageContext, StudentMenu, StudentMealPlans, StudentLeaderboard, StudentProfile, StudentSchedule, MenuItemCard, ItemDetailModal, CheckoutSheet, VendorCard, MealPlanManager, MenuItemForm, and PickupSlotManager.
+- Notification Modal Refactor:
+  * Replaced static bell link with interactive NotificationsModal component.
+  * Dynamically queries active announcements and in-progress order alerts instead of hardcoded badges.
+  * Supports real-time badge count reflecting actual active notices.
+- Verification:
+  * All 53 pytest backend unit and integration tests passing.
+  * npm run build compiled with 0 errors.
+
+PHASE M: Motion & Tactile Interaction System (Strict Zero-Redesign Compliance)
+- 100% Visual & Architectural Preservation:
+  * Retained exact typography, font families, font sizes, line heights, letter-spacing, colors, layouts, markup, components, routing, and backend integrations.
+- Motion & Animation Layer:
+  * Built frontend/src/animations/motionPresets.js with organic easing curves (cubic-bezier(0.16, 1, 0.3, 1)) and staggered container variants.
+  * Built useScrollReveal.js for GSAP ScrollTrigger viewport reveals.
+  * Built useTactileHover.js for subtle magnetic proximity and card tilt physics.
+  * Added tactile hover and image scaling to MenuItemCard and VendorCard.
+  * Added staggered entrance animation to StudentMenu and StudentOrders.
+  * Added arrow travel micro-interactions on buttons and CTA links.
+  * Implemented prefers-reduced-motion safety across all motion hooks.
+- Verification:
+  * 53/53 pytest backend tests passing (100%).
+  * npm run build compiled with 0 errors.
+
+PHASE N: Unified Orders Page Experience & Design System Alignment
+- Page Shell & Architecture:
+  * Upgraded StudentOrders.jsx to use the unified healthy-discovery-page shell and healthy-top-nav matching StudentMenu, StudentMealPlans, and StudentProfile.
+  * Added editorial hero head with live marquee banner and real stats strip (Active Now, Picked Up, Total Spent).
+  * Styled filter tabs (All Tickets, Active & Cooking, Completed, Cancelled) using the dietary filter pill design system with real-time counter badges.
+  * Enhanced OrderTicket cards with live pickup tokens, QR zoom modal, horizontal mascot tracker, itemized lines, eco badges, and review triggers.
+- Verification:
+  * 53/53 pytest backend tests passing (100%).
+  * npm run build compiled with 0 errors.
+
+--------------------------------------------------------------------------------
+3. RUN & VERIFICATION COMMANDS
+--------------------------------------------------------------------------------
+Start Backend API Server:
+  uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
+
+Run Backend Pytest Suite:
+  .\venv\Scripts\python -m pytest
+
+Start Frontend Development Server (accessible from any phone on Wi-Fi):
+  cd frontend
+  npm run dev -- --host
+
+Build Frontend for Production:
+  cd frontend
+  npm run build
+
+================================================================================
+

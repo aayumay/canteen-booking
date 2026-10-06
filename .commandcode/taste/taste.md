@@ -1,0 +1,4 @@
+- Prefers exact version pins (==X.Y.Z) over range pins (<5, ~=) for reproducibility — "it guarantees reproducible builds rather than silently picking up whatever 4.x happens to be newest later." Confidence: 0.95
+- Insists on verifying that edits actually landed in the file being read before trusting them — "check that the edit actually landed in the file this agent is reading." Confidence: 0.9
+- Does a clean reinstall (pip uninstall -y <pkgs> && pip install -r requirements.txt) after dependency changes so the running environment matches the lockfile. Confidence: 0.85
+- Treats stray artifact files in the project root (e.g. `$null` from a failed PowerShell redirect) as garbage to be deleted, not committed. Confidence: 0.8

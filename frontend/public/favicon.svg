@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-label="Canteen Booking">
+  <!--
+    The app's brand mark, copied verbatim from DoodleBrandMark in
+    frontend/src/components/common/doodles.jsx (viewBox 0 0 40 40,
+    strokeWidth 3.2, round caps/joins) so the favicon cannot drift from the
+    logo rendered in the app. Kept as a standalone file because a favicon has
+    to be a real asset the browser can fetch; a React component cannot be
+    referenced from a tab.
+
+    Background uses the app's own --color-forest-deep equivalent (#3e4f30) so
+    it matches the admin header / app chrome, and the mark is drawn in the
+    sage surface colour (#e2e8d5) for contrast.
+  -->
+  <rect width="40" height="40" rx="9" fill="#3e4f30"/>
+  <g transform="translate(20 20) scale(0.78) translate(-20 -20)">
+    <g fill="none" stroke="#e2e8d5" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 27c0-9 6-16 14-16s14 7 14 16"/>
+      <path d="M4 27h32"/>
+      <path d="M14 34h12"/>
+    </g>
+    <path d="M27 8c3-2 6-1 7 2-3 1-6 0-7-2z" fill="#e2e8d5" stroke="none"/>
+  </g>
+</svg>

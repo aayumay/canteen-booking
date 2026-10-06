@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(mkdir:*)",
+      "powershell",
+      "Shell(python --version)",
+      "Shell(pip:*)",
+      "Shell(where python3 python pip3 2>nul; echo \"---done---\")",
+      "Shell(python -m py_compile app/main.py app/core/config.py app/core/security.py app/core/deps.py app/db/session.py app/models/__init__.py app/models/base.py app/models/user.py app/models/menu_item.py app/models/order.py app/models/order_item.py app/models/order_status_transition.py app/models/otp_attempt.py app/crud/__init__.py app/crud/user.py app/crud/menu_item.py app/crud/order.py app/crud/otp_attempt.py app/crud/order_status_transition.py app/schemas/__init__.py app/schemas/auth.py app/schemas/user.py app/schemas/menu_item.py app/schemas/order.py app/schemas/otp.py app/services/__init__.py app/services/otp_service.py app/services/order_service.py app/api/__init__.py app/api/v1/__init__.py app/api/v1/auth.py app/api/v1/student.py app/api/v1/vendor.py app/exceptions.py alembic/env.py alembic/versions/0001_initial.py)",
+      "Shell(C:UsersAayush:*)",
+      "Shell()",
+      "Shell(py:*)",
+      "Shell(Out-Null:*)",
+      "Shell(Write-Output:*)",
+      "Shell(if:*)",
+      "Shell({:*)",
+      "Shell(Remove-Item -Force D:\\VS-projects\\Pre-book\\test_smoke.db, D:\\VS-projects\\Pre-book\\test_smoke.db-journal 2>$null; Write-Host \"cleaned\")"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}

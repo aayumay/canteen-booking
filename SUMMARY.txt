@@ -1,0 +1,137 @@
+====================================================================
+CANTEEN BOOKING SYSTEM - FastAPI Backend
+Build Summary
+====================================================================
+
+Scope: Production-ready backend (FastAPI + PostgreSQL + SQLAlchemy 2.0).
+      No demo/mock data, no TODO stubs; every endpoint hits a real DB.
+
+--------------------------------------------------------------------
+1. PROJECT LAYOUT
+--------------------------------------------------------------------
+Pre-book/
+  requirements.txt        pinned dependencies
+  .env.example            every env variable documented + defaulted
+  .gitignore
+  Dockerfile              python:3.12-slim image
+  docker-compose.yml      postgres:16 + api service wiring
+  alembic/                env.py (imports Base.metadata from app.models)
+    versions/
+      0001_initial.py     initial schema migration (postgres-native enums)
+  app/
+    main.py               FastAPI app, CORS, lifespan, exception handlers, /health
+    exceptions.py         IntegrityError->409, generic->500
+    core/
+      config.py           pydantic-settings Settings + lru_cache get_settings
+      security.py         JWT access/refresh tokens, OTP generation/hash/verify
+      deps.py             get_current_user / get_current_student / get_current_vendor
+    db/
+      session.py          engine + SessionLocal + get_db
+    models/               typed Mapped columns
+      base.py             DeclarativeBase
+      user.py             User (role enum student/vendor; vendor: shop_name, is_shop_open)
+      menu_item.py        MenuItem
+      order.py            Order (status enum, 6-digit pickup_token)
+      order_item.py       OrderItem (item_name + price_at_order snapshotted)
+      order_status_transition.py  state-machine lookup table
+      otp_attempt.py      OtpAttempt (hashed_otp, attempts, is_used, expires_at)
+      __init__.py         re-exports Base + all models (imported by alembic)
+    schemas/              Pydantic v2 models for every DTO
+    crud/                 pure DB access (no business logic)
+    services/
+      otp_service.py      request_otp / verify_otp_and_issue_tokens
+                          (rate limit per phone window, bcrypt OTP hashing,
+                           twilio SMS send, vendor silent reject)
+      order_service.py    place_order (server-side total recompute, ownership +
+                           availability + shop-open validation) and
+                           transition_order_status (state machine enforcement,
+                           ownership check, rejection reason guard)
+    api/v1/               thin route handlers
+      auth.py             POST /auth/request-otp, POST /auth/verify-otp, GET /auth/me
+      student.py          list open vendors, vendor menu, place/get/list orders
+      vendor.py           toggle shop, full menu CRUD (ownership-checked),
+                           list/get orders (filterable by status), update status
+--------------------------------------------------------------------
+2. DOMAIN RULES ENFORCED
+--------------------------------------------------------------------
+- Users: single table + role enum. Vendors pre-provisioned only.
+  Students self-register on first successful OTP verify (name required).
+- Orders belong to one student + one vendor; OrderItem snapshots
+  item_name and price_at_order at creation (menu edits never corrupt
+  past orders). Random 6-digit pickup_token generated with uniqueness
+  retry.
+- Order status state machine (lookup table seeded on startup + on demand):
+  placed -> accepted | rejected(reason)   (vendor)
+  accepted -> preparing                   (vendor)
+  preparing -> ready                      (vendor)
+  ready -> picked_up                      (vendor)
+  placed -> cancelled                     (student only)
+- Transitions enforced server-side in order_service; student may cancel
+  only while status == placed; only the owning vendor/student may act.
+- Auth flow: OTP (no passwords). OTP is bcrypt-hashed before storage.
+  Rate-limited per phone per rolling window -> 429. Verify caps wrong
+  attempts; most-recent unused/unexpired OTP checked. JWT issued with
+  role + sub embedded on success.
+- Pricing: server recomputes total from current vendor prices; the
+  client-sent total is never trusted.
+- All CRUD ownership checks are done (menu item, order access).
+--------------------------------------------------------------------
+3. AUTH GUARDS
+--------------------------------------------------------------------
+- get_current_user: decodes Bearer JWT, checks access token type,
+  reloads user from DB.
+- get_current_student: 403 unless role == student.
+- get_current_vendor: 403 unless role == vendor.
+--------------------------------------------------------------------
+4. API SURFACE
+--------------------------------------------------------------------
+Student:
+  GET  /api/v1/student/vendors              list open vendors
+  GET  /api/v1/student/vendors/{id}/menu    view available menu
+  POST /api/v1/student/orders               place order
+  GET  /api/v1/student/orders               list own orders
+  GET  /api/v1/student/orders/{id}          single order (owner-only)
+Vendor:
+  PATCH /api/v1/vendor/shop/toggle          toggle shop open/closed
+  GET   /api/v1/vendor/menu                 list own menu
+  POST  /api/v1/vendor/menu                 create menu item
+  GET   /api/v1/vendor/menu/{id}            get menu item
+  PATCH /api/v1/vendor/menu/{id}            update menu item
+  DELETE/api/v1/vendor/menu/{id}            delete menu item
+  GET   /api/v1/vendor/orders               list incoming (status filter)
+  GET   /api/v1/vendor/orders/{id}          get order
+  PATCH /api/v1/vendor/orders/{id}/status   transition status
+Auth:
+  POST /api/v1/auth/request-otp
+  POST /api/v1/auth/verify-otp
+  POST /api/v1/auth/refresh             rotate access & refresh token pair
+  GET  /api/v1/auth/me
+Admin:
+  POST /api/v1/admin/vendors            provision vendor (protected by X-Admin-Key)
+Health:
+  GET  /health
+--------------------------------------------------------------------
+5. VENDOR ONBOARDING (ADMIN API)
+--------------------------------------------------------------------
+Vendors cannot self-register. To onboard a new canteen stall, call the Admin
+provisioning API with the secret ADMIN_API_KEY:
+
+  # Generate key: openssl rand -hex 32
+  curl -X POST http://localhost:8080/api/v1/admin/vendors \
+    -H "Content-Type: application/json" \
+    -H "X-Admin-Key: <ADMIN_API_KEY>" \
+    -d '{"phone_number": "9876543210", "name": "Campus Stall", "shop_name": "Campus Stall"}'
+
+Note: This endpoint is strictly internal and never exposed to the public UI.
+--------------------------------------------------------------------
+6. RUNNING LOCALLY
+--------------------------------------------------------------------
+  cp .env.example .env       # configure secrets
+  docker compose up -d        # start Postgres + FastAPI backend
+  docker compose exec api alembic upgrade head
+
+  cd frontend
+  npm install
+  npm run dev                 # start Vite dev server on http://localhost:5173
+====================================================================
+

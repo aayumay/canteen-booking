@@ -1,0 +1,297 @@
+/* Scoped Kraft/Sepia Vintage Ticket Styling */
+
+.vintage-ticket {
+  /* Hardcoded Kraft Paper Palette */
+  --vt-bg: #F1E4C0;
+  --vt-ink: #4A3728;
+  --vt-ink-muted: #8B7355;
+  --vt-divider: #C9B98A;
+  --vt-ink-light: #6B5638;
+  --vt-white: #FBF8F0;
+
+  position: relative;
+  background: var(--vt-bg);
+  border: 2px dashed var(--vt-ink-muted);
+  border-radius: 8px; /* Slight rounding for a paper look */
+  padding: 0;
+  color: var(--vt-ink);
+  font-family: var(--font-sans, sans-serif);
+  max-width: 360px;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden; /* To clip the dividers properly if needed */
+}
+
+/* Header */
+.vt-header {
+  padding: 16px 16px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.vt-vendor-name {
+  font-family: var(--font-display, serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--vt-ink);
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.vt-meta {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+  color: var(--vt-ink-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vt-status-pill {
+  border: 2px solid var(--vt-ink-muted);
+  color: var(--vt-ink-light);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* Perforation Divider */
+.vt-divider-wrap {
+  position: relative;
+  height: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.vt-divider-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-top: 2px dashed var(--vt-divider);
+}
+
+.vt-cutout {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-color: var(--color-bg-sunken, #0A0A0A); /* Matches the page background hole punch */
+  border-radius: 50%;
+  top: 0;
+  z-index: 2;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.vt-cutout-left {
+  left: -8px;
+}
+
+.vt-cutout-right {
+  right: -8px;
+}
+
+/* Tracker */
+.vt-section {
+  padding: 12px 16px;
+}
+
+.vt-tracker-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.vt-tracker-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--vt-ink);
+  margin: 0;
+}
+
+.vt-tracker-row {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-top: 4px;
+}
+
+.vt-tracker-rail {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  border-top: 2px dotted var(--vt-ink-muted);
+  z-index: 1;
+}
+
+.vt-tracker-node {
+  position: relative;
+  z-index: 2;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--vt-bg);
+  border: 2px solid var(--vt-ink-muted);
+  color: var(--vt-ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vt-tracker-node.vt-completed,
+.vt-tracker-node.vt-current {
+  border-color: var(--vt-ink);
+  color: var(--vt-ink);
+}
+
+.vt-tracker-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 8px;
+  color: var(--vt-ink-muted);
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+}
+.vt-tracker-node.vt-current .vt-tracker-label {
+  color: var(--vt-ink);
+  font-weight: 700;
+}
+
+/* Pickup Token */
+.vt-token-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vt-token-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.vt-token-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--vt-ink-muted);
+  margin-bottom: 4px;
+}
+
+.vt-token-digits {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--vt-ink);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.vt-token-hint {
+  font-size: 0.7rem;
+  color: var(--vt-ink-muted);
+  max-width: 200px;
+}
+
+.vt-token-qr {
+  background: var(--vt-white);
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+}
+
+/* Items List */
+.vt-item-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 0.85rem;
+  color: var(--vt-ink);
+}
+
+.vt-item-name {
+  font-weight: 500;
+}
+
+.vt-item-qty {
+  font-family: var(--font-mono, monospace);
+  color: var(--vt-ink-muted);
+}
+
+/* Footer */
+.vt-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vt-total {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.25rem;
+  color: var(--vt-ink);
+}
+
+.vt-total strong {
+  font-weight: 700;
+}
+
+.vt-btn-danger {
+  background: transparent;
+  border: 2px solid var(--color-danger, #E85D4C);
+  color: var(--color-danger, #E85D4C);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.vt-btn-primary {
+  background: transparent;
+  border: 2px solid var(--vt-ink);
+  color: var(--vt-ink);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+/* Stale Banner */
+.vt-stale-banner {
+  background: rgba(74, 55, 40, 0.08);
+  padding: 6px 16px;
+  font-size: 0.7rem;
+  color: var(--vt-ink-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px dashed var(--vt-divider);
+  border-bottom: 1px dashed var(--vt-divider);
+}
+
+.vt-stale-btn {
+  background: none;
+  border: none;
+  color: var(--vt-ink);
+  text-decoration: underline;
+  font-size: 0.7rem;
+  cursor: pointer;
+  font-weight: 600;
+}

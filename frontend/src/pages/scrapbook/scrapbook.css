@@ -1,0 +1,214 @@
+/* ============================================================================
+   Scrapbook page styles.
+
+   Tailwind is imported HERE and nowhere else. Two deliberate restrictions
+   keep it from leaking into the rest of the app:
+
+   1. preflight is NOT imported. The full "@import tailwindcss" entry ships a
+      base reset (element margins, border defaults, font stack). In a
+      single-page app that CSS stays resident after the route loads, so it
+      would re-style the dashboard, vendor and student pages underneath it.
+      This page inherits the app's existing base styles from index.css
+      instead, which is the same design system anyway.
+
+   2. source(none) disables Tailwind's automatic content detection. By default
+      the Vite plugin scans every file in the project, so any pre-existing
+      className that happens to read as a utility ("hidden", "relative",
+      "truncate", ...) would emit a global rule for it. @source below opts in
+      the scrapbook directory and nothing else.
+
+   The @theme block maps the real runtime tokens from index.css:4466, so the
+   utility names below resolve to the same sage/forest palette the rest of
+   the app uses rather than Tailwind's stock colours.
+   ========================================================================== */
+
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@source "./**/*.{js,jsx}";
+/* Scrapbook.jsx itself is the page shell and lives one level up, outside the
+   glob above. Without this its own classes (min-h-screen, inline-block) are
+   never generated — they only appeared to work because other files happen to
+   use the same utilities. */
+@source "../Scrapbook.jsx";
+
+@theme {
+  /* from :root in index.css - the later :root wins over the earlier ones */
+  --color-sage: #e2e8d5;
+  --color-forest: #596b48;
+  --color-pine: #3e4f30;
+  --color-ink: #2f3824;
+  --color-moss: #66755a;
+
+  /* Ink accent for the rubber stamps. The system palette has no warm
+     accent that reads as "stamp ink" -- the gold (#8B6914) reads as brass and
+     pine reads as a border. Rust is the one hue that looks pressed. */
+  --color-stamp: #a3402c;
+
+  --font-hand: "Caveat", "Comic Sans MS", cursive;
+  --font-mono-stack: "DM Mono", ui-monospace, monospace;
+}
+
+/* ============================================================================
+ * Component layer.
+
+   Hand-written because these are effects, not one-to-one utilities: several
+   need a mask with four layered gradients, and expressing that as a utility
+   class would be unreadable.
+   ========================================================================== */
+
+@layer components {
+  /* -- Ticket edge ------------------------------------------------------
+     Semicircular bites punched out of all four sides, the way a till roll
+     separates. Four mask layers, one per edge, each repeating along its axis.
+     The page colour shows through the bites, so a white panel on the sage
+     background reads as torn paper rather than a rectangle. */
+  .torn {
+    --bite: 7px;
+    --pitch: 15px;
+    --torn-mask:
+      radial-gradient(var(--bite) at 50% 0, #0000 97%, #000) 50% 0 /
+        var(--pitch) 100% repeat-x,
+      radial-gradient(var(--bite) at 50% 100%, #0000 97%, #000) 50% 100% /
+        var(--pitch) 100% repeat-x,
+      radial-gradient(var(--bite) at 0 50%, #0000 97%, #000) 0 50% /
+        100% var(--pitch) repeat-y,
+      radial-gradient(var(--bite) at 100% 50%, #0000 97%, #000) 100% 50% /
+        100% var(--pitch) repeat-y;
+    -webkit-mask: var(--torn-mask);
+    mask: var(--torn-mask);
+  }
+
+  /* Horizontal tears only, for the top and bottom of a tall docket. */
+  .torn-x {
+    --bite: 7px;
+    --pitch: 15px;
+    --torn-x-mask:
+      radial-gradient(var(--bite) at 50% 0, #0000 97%, #000) 50% 0 /
+        var(--pitch) 100% repeat-x,
+      radial-gradient(var(--bite) at 50% 100%, #0000 97%, #000) 50% 100% /
+        var(--pitch) 100% repeat-x;
+    -webkit-mask: var(--torn-x-mask);
+    mask: var(--torn-x-mask);
+  }
+
+  /* -- Rubber stamp -----------------------------------------------------
+     A double rule (border + inset ring), wide tracking, and multiply
+     blending so overlapping stamps darken like real ink on paper. */
+  .stamp {
+    border: 3px solid currentColor;
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.9);
+    padding: 5px 12px 4px;
+    font-family: var(--font-mono-stack);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-stamp);
+    mix-blend-mode: multiply;
+    white-space: nowrap;
+  }
+
+  /* -- Washi tape -------------------------------------------------------
+     Angled ends rather than square, and translucent so whatever it holds
+     stays readable underneath. The rotation is set inline as its own `rotate`
+     property, so the sway keyframe animates `transform` only and the two
+     compose instead of fighting. */
+  .tape {
+    background: rgb(255 255 255 / 0.42);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.5);
+    clip-path: polygon(
+      4% 0,
+      96% 6%,
+      100% 50%,
+      96% 94%,
+      4% 100%,
+      0 50%
+    );
+    backdrop-filter: blur(1.5px);
+  }
+
+  /* -- Hard offset ------------------------------------------------------
+     A printed-on-paper edge. Deliberately no blur: this page is flat ink on
+     paper, so a soft drop shadow would read as a different material. */
+  .hard-shadow {
+    box-shadow: 6px 6px 0 0 var(--color-ink);
+  }
+
+  .hard-shadow-sm {
+    box-shadow: 4px 4px 0 0 var(--color-ink);
+  }
+
+  /* -- Halftone ---------------------------------------------------------
+     A printed-dot field used to build depth where a shadow would normally go. */
+  .halftone {
+    background-image: radial-gradient(currentColor 1px, #0000 1.4px);
+    background-size: 7px 7px;
+  }
+
+  /* -- Rule / divider --------------------------------------------------- */
+  .dashed-rule {
+    border-top: 2px dashed currentColor;
+    opacity: 0.5;
+  }
+
+  /* Long ticket-stub notch on one side, for the hero chips. */
+  .notched {
+    --bite: 6px;
+    -webkit-mask:
+      radial-gradient(var(--bite) at 100% 50%, #0000 96%, #000) 100% 50% /
+        100% 13px repeat-y;
+    mask:
+      radial-gradient(var(--bite) at 100% 50%, #0000 96%, #000) 100% 50% /
+        100% 13px repeat-y;
+  }
+}
+
+/* Respect the OS setting for the decorative loops that CSS drives on its own. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes sb-sway {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-7px);
+    }
+  }
+
+  .sway {
+    animation: sb-sway 7s ease-in-out infinite;
+  }
+
+  /* Hand-taped strips and pinned scraps get the same gentle wobble. */
+  .tape,
+  .sway-pin {
+    animation: sb-sway 7s ease-in-out infinite;
+  }
+
+  @keyframes sb-scan {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(220%);
+    }
+  }
+
+  /* The shine that travels across the barcode when it "prints". */
+  .barcode-scan::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      #0000 38%,
+      rgb(255 255 255 / 0.85) 50%,
+      #0000 62%
+    );
+    animation: sb-scan 2.6s ease-in-out infinite;
+  }
+}
