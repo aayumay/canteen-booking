@@ -245,12 +245,6 @@ export function Hero({ primaryHref, signedIn }) {
 
       <div className="lp-hero-inner">
         <div className="lp-hero-copy">
-          <Reveal className="lp-eyebrow-wrap" distance={14}>
-            <span className="lp-eyebrow">
-              <span className="lp-eyebrow-dot" aria-hidden="true" />
-              {signedIn ? "Welcome back to the counter" : "Now serving across campus"}
-            </span>
-          </Reveal>
 
           <h1 id="lp-hero-title" className="hero-heading">
             <span className="hero-line hero-script">
